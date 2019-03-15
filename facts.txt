@@ -1,0 +1,95 @@
+* eslint-disable  func-names */
+/* eslint quote-props: ["error", "consistent"]*/
+/**
+ * This sample demonstrates a simple skill built with the Amazon Alexa Skills
+ * nodejs skill development kit.
+ * This sample supports multiple lauguages. (en-US, en-GB, de-DE).
+ * The Intent Schema, Custom Slots and Sample Utterances for this skill, as well
+ * as testing instructions are located at https://github.com/alexa/skill-sample-nodejs-fact
+ **/
+
+'use strict';
+const Alexa = require('alexa-sdk');
+
+//=========================================================================================================================================
+//TODO: The items below this comment need your attention.
+//=========================================================================================================================================
+
+//Replace with your app ID (OPTIONAL).  You can find this value at the top of your skill's page on http://developer.amazon.com.
+//Make sure to enclose your value in quotes, like this: const APP_ID = 'amzn1.ask.skill.bb4045e6-b3e8-4133-b650-72923c5980f1';
+const APP_ID = undefined;
+
+const SKILL_NAME = 'Space Facts';
+const GET_FACT_MESSAGE = "have a good day";
+const HELP_MESSAGE = 'You can say... tell me a qoute, or, you can say stop... What can I help you with?';
+const HELP_REPROMPT = 'What can I help you with?';
+const STOP_MESSAGE = 'Goodbye...have a pleasant day';
+
+//=========================================================================================================================================
+//TODO: Replace this data with your own.  You can find translations of this data at http://github.com/alexa/skill-sample-node-js-fact/data
+//=========================================================================================================================================
+const data = [
+    'You’re only here for a short visit. Don’t hurry, don’t worry. And be sure to smell the flowers along the way.',
+    'If you want to shine like a sun, first burn like a sun.',
+    'Never stop fighting until you arrive at your destined place - that is, the unique you. Have an aim in life, continuously acquire knowledge, work hard, and have perseverance to realise the great life. ',
+    'If four things are followed... having a great aim, acquiring knowledge, hard work, and perseverance - then anything can be achieved.',
+    'You have to dream before your dreams can come true.',
+    'Excellence is a continuous process and not an accident.',
+    'To succeed in your mission, you must have single-minded devotion to your goal.',
+    'To succeed in your mission, you must have single-minded devotion to your goal.',
+    'If you realized how powerful your thoughts are, you would never think a negative thought.',
+    'In matters of style, swim with the current... in matters of principle, stand like a rock.',
+    'happiness can be found even in the darkest of times, if one only remembers to turn on the light.',
+    'It is our choices, that show what we truly are, far more than our abilities.',
+    'Dark and difficult times lie ahead. Soon we must all face the choice between what is right and what is easy',
+];
+
+//=========================================================================================================================================
+//Editing anything below this line might break your skill.
+//=========================================================================================================================================
+
+const handlers = {
+    'LaunchRequest': function () {
+        this.emit('GetQouteIntent');
+    },
+    'GetNewQouteIntent': function () {
+        const factArr = data;
+        const factIndex = Math.floor(Math.random() * factArr.length);
+        const randomFact = factArr[factIndex];
+        const speechOutput =  randomFact;
+        const reprompt = HELP_REPROMPT;
+        this.response.cardRenderer(SKILL_NAME, randomFact);
+        this.response.speak(speechOutput).listen(reprompt);
+        this.emit(':responseReady');
+    },
+    'AMAZON.HelpIntent': function () {
+        const speechOutput = HELP_MESSAGE;
+        const reprompt = HELP_REPROMPT;
+
+        this.response.speak(speechOutput).listen(reprompt);
+        this.emit(':responseReady');
+    },
+    'AMAZON.NavigateHomeIntent': function () {
+        this.emit('GetNewQouteIntent');
+    },
+    'AMAZON.CancelIntent': function () {
+        this.response.speak(STOP_MESSAGE);
+        this.emit(':responseReady');
+    },
+     'AMAZON.YesIntent': function () {
+        const reprompt = HELP_REPROMPT;
+        this.response.speak(HELP_MESSAGE).listen(reprompt);
+        this.emit(':responseReady');
+    },
+    'AMAZON.StopIntent': function () {
+        this.response.speak(STOP_MESSAGE);
+        this.emit(':responseReady');
+    },
+};
+
+exports.handler = function (event, context, callback) {
+    const alexa = Alexa.handler(event, context, callback);
+    alexa.APP_ID = APP_ID;
+    alexa.registerHandlers(handlers);
+    alexa.execute();
+};
